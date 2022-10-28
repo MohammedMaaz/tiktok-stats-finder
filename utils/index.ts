@@ -22,7 +22,7 @@ export const readVarFromSite = async (url: string, varName: string) => {
   const page = await browser.newPage();
 
   //don't need to wait for the whole page to load, only untill var gets available
-  page.goto(url);
+  page.goto(url).catch(console.error);
   await page.waitForFunction(
     (varName: string) =>
       Object.keys((window as Record<string, any>)[varName] || {}).length > 0,
