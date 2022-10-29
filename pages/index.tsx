@@ -21,7 +21,9 @@ export default function Home() {
     dispatch(
       tiktokActions.fetchStats({
         username,
-        onSuccess: () => router.push(`/stats/${username}`),
+        //move to stats page, after stats are fetched (to cache API response)
+        onSuccess: () =>
+          setTimeout(() => router.push(`/stats/${username}`), 1000),
       })
     );
   };
