@@ -1,48 +1,18 @@
-import chromium from "chrome-aws-lambda";
-import { NextApiResponse } from "next";
-import puppeteer from "puppeteer-core";
-import { CACHE_MAX_AGE } from "../constants/api";
-import { LOCAL_CHROME_EXECUTABLE } from "../constants/puppeteer";
-import { APIResponse } from "../types/api";
+export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const readVarFromSite = async (url: string, varName: string) => {
-  //to execute puppeteer on serverless env, fallbacks to local exe path while running locally
-  const executablePath =
-    (await chromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
+export const getSerializedError = (error: any): string => {
+  if (!error) return "";
 
-  //launch in headless mode
-  const browser = await puppeteer.launch({
-    executablePath,
-    args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
-    defaultViewport: chromium.defaultViewport,
-    headless: true,
-    ignoreHTTPSErrors: true,
-  });
+  if (typeof error === "string") return error;
+  if (typeof error?.response?.data?.error === "string")
+    return error.response.data.error;
+  if (typeof error?.message === "string") return error.message;
+  if (typeof error?.data === "string") return error.details;
 
-  const page = await browser.newPage();
+  try {
+    const str = JSON.stringify(error);
+    return str;
+  } catch (e) {}
 
-  //don't need to wait for the whole page to load, only untill var gets available
-  page.goto(url).catch(console.error);
-  await page.waitForFunction(
-    (varName: string) =>
-      Object.keys((window as Record<string, any>)[varName] || {}).length > 0,
-    {},
-    varName
-  );
-
-  //extra safety delay to avoid race conditions
-  await page.waitForTimeout(100);
-  return await page.evaluate(varName);
+  return "An unknow error occurred";
 };
-
-export const getAPIResponder =
-  <T>(res: NextApiResponse<APIResponse<T>>, cacheMaxAge = CACHE_MAX_AGE) =>
-  (status: number, json: APIResponse<T>) => {
-    res
-      .setHeader(
-        "Cache-Control",
-        `max-age=0, s-maxage=${cacheMaxAge}, stale-while-revalidate,`
-      )
-      .status(status)
-      .json(json);
-  };

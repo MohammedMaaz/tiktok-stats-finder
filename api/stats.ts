@@ -5,8 +5,8 @@ import {
   VIDEOS_TO_AGGREGATE_COUNT,
 } from "../constants/api";
 import meanBy from "lodash.meanby";
-import { getAPIResponder, readVarFromSite } from "../utils";
-import { APIResponse, StatsResponse } from "../types/api";
+import { getAPIResponder, readVarFromSite } from "../utils/server";
+import { APIResponse, StatsResponse } from "../common/types/api";
 
 export default async function handler(
   req: NextApiRequest,

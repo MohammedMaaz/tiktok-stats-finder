@@ -19,7 +19,9 @@ export type StatsResponse = {
   stats: Stats;
 };
 
+export type APIError = string | Record<string, any>;
+
 export type APIResponse<T> = {
-  error?: string | Record<string, any>;
+  error?: APIError;
   data?: T;
 };
