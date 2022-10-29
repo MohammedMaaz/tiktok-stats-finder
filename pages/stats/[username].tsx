@@ -5,15 +5,19 @@ import tiktokService from "../../modules/tiktok/services";
 import { getSerializedError, isValidUsername } from "../../utils";
 import { errors } from "../../common/constants/error";
 import StatGridItem from "../../modules/tiktok/components/StatGridItem";
-import styles from "./index.module.css";
 import DisplayError from "../../common/components/DisplayError";
+import { useSelector } from "react-redux";
+import styles from "./index.module.css";
+import { tiktokSelectors } from "../../modules/tiktok/redux/selectors";
 
 interface Props {
   data?: StatsResponse;
   error?: string;
 }
 
-export default function Stats({ error, data }: Props) {
+function Stats({ error, data }: Props) {
+  const stateData = useSelector(tiktokSelectors.statsData);
+  data = data || (stateData as StatsResponse);
   if (error || !data) return <DisplayError message={error || errors.NO_DATA} />;
 
   const { user, stats } = data;
@@ -49,19 +53,23 @@ export default function Stats({ error, data }: Props) {
   );
 }
 
-//Server rendering provides publically shareable persistent links with SEO capabilities
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  let username = context.params?.username;
-  if (Array.isArray(username)) username = username[0];
+/*
+  getInitialProps is used instead of getServerSideProps to enable client side
+  navigation as well as leverage server rendering for standalone URL
+*/
+Stats.getInitialProps = async (context: any) => {
+  const split = context.req?.url?.split?.("/") || [];
+  const username = split[split.length - 1];
 
   //validate username received in path
-  if (!username || !isValidUsername(username))
-    return { props: { error: errors.INVALID_USERNAME } };
+  if (!username || !isValidUsername(username)) return { data: null };
 
   try {
     const res = await tiktokService.fetchStats(username);
-    return { props: { data: res.data.data } };
+    return { data: res.data.data };
   } catch (error) {
-    return { props: { error: getSerializedError(error) } };
+    return { error: getSerializedError(error) };
   }
 };
+
+export default Stats;
