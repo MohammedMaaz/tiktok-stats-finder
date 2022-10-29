@@ -7,11 +7,6 @@ body {
   font-family: "General Sans", sans-serif;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
 * {
   box-sizing: border-box;
 }

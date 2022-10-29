@@ -1,4 +1,4 @@
-import { FormEventHandler, useEffect, useState } from "react";
+import { FormEventHandler, useCallback, useEffect, useState } from "react";
 import Button from "../common/components/Button";
 import Input from "../common/components/Input";
 import { useSelector, useDispatch } from "react-redux";
@@ -6,20 +6,34 @@ import { tiktokSelectors } from "../modules/tiktok/redux/selectors";
 import { tiktokActions } from "../modules/tiktok/redux/thunks";
 import { AppDispatch } from "../store";
 import { useRouter } from "next/router";
+import { isValidUsername } from "../utils";
 
 export default function Home() {
   const [username, setUsername] = useState("");
   const loading = useSelector(tiktokSelectors.statsLoading);
-  const error = useSelector(tiktokSelectors.statsError);
+  const _error = useSelector(tiktokSelectors.statsError);
+  const [error, setError] = useState(_error);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    dispatch(tiktokActions.fetchStats(username))
-      .unwrap()
-      .then(() => router.push(`/stats/${username}`));
+    dispatch(
+      tiktokActions.fetchStats({
+        username,
+        onSuccess: () => router.push(`/stats/${username}`),
+      })
+    );
   };
+
+  const onValueChange = useCallback((val: string) => {
+    setUsername(val);
+    setError("");
+  }, []);
+
+  useEffect(() => {
+    setError(_error);
+  }, [_error]);
 
   useEffect(() => {
     //set button's loading false only after navigation (to accomodate page load delay)
@@ -48,12 +62,16 @@ export default function Home() {
           prefix="tiktok.com/@"
           hint="username"
           value={username}
-          onValueChange={setUsername}
+          onValueChange={onValueChange}
           className="mt-32"
           error={error || ""}
         />
 
-        <Button type="submit" disabled={!username || loading} className="mt-24">
+        <Button
+          type="submit"
+          disabled={!isValidUsername(username) || loading || !!error}
+          className="mt-24"
+        >
           {loading ? "Fetching Data..." : "Show Performance"}
         </Button>
       </form>

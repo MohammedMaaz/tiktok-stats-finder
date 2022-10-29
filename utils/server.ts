@@ -1,9 +1,9 @@
 import chromium from "chrome-aws-lambda";
 import { NextApiResponse } from "next";
 import puppeteer from "puppeteer-core";
-import { CACHE_MAX_AGE } from "../constants/api";
+import { CACHE_MAX_AGE } from "../common/constants/api";
 import { APIResponse } from "../common/types/api";
-import { LOCAL_CHROME_EXECUTABLE } from "../constants/puppeteer";
+import { LOCAL_CHROME_EXECUTABLE } from "../common/constants/puppeteer";
 
 export const readVarFromSite = async (url: string, varName: string) => {
   //to execute puppeteer on serverless env, fallbacks to local exe path while running locally
@@ -35,6 +35,8 @@ export const readVarFromSite = async (url: string, varName: string) => {
   return await page.evaluate(varName);
 };
 
+//Cache-Control header ensures edge caching of API response to avoid
+//expensive scraping attempts frequently
 export const getAPIResponder =
   <T>(res: NextApiResponse<APIResponse<T>>, cacheMaxAge = CACHE_MAX_AGE) =>
   (status: number, json: APIResponse<T>) => {

@@ -2,8 +2,8 @@ import React from "react";
 import { GetServerSideProps } from "next";
 import { StatsResponse } from "../../common/types/api";
 import tiktokService from "../../modules/tiktok/services";
-import { getSerializedError } from "../../utils";
-import { errors } from "../../constants/error";
+import { getSerializedError, isValidUsername } from "../../utils";
+import { errors } from "../../common/constants/error";
 import StatGridItem from "../../modules/tiktok/components/StatGridItem";
 import styles from "./index.module.css";
 import DisplayError from "../../common/components/DisplayError";
@@ -17,7 +17,6 @@ export default function Stats({ error, data }: Props) {
   if (error || !data) return <DisplayError message={error || errors.NO_DATA} />;
 
   const { user, stats } = data;
-
   return (
     <div className="flex flex-col max-w-xl m-auto text-dark font-semibold">
       <h4 className="text-subheader text-medium">Showing data for</h4>
@@ -50,11 +49,14 @@ export default function Stats({ error, data }: Props) {
   );
 }
 
+//Server rendering provides publically shareable persistent links with SEO capabilities
 export const getServerSideProps: GetServerSideProps = async (context) => {
   let username = context.params?.username;
   if (Array.isArray(username)) username = username[0];
 
-  if (!username) return { props: { error: errors.INVALID_USERNAME } };
+  //validate username received in path
+  if (!username || !isValidUsername(username))
+    return { props: { error: errors.INVALID_USERNAME } };
 
   try {
     const res = await tiktokService.fetchStats(username);

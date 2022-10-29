@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { API_BASE_URL } from "../constants/api";
+import { API_BASE_URL } from "../common/constants/api";
 import * as rax from "retry-axios";
 
 const axios = Axios.create({

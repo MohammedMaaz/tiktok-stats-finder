@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import styles from "./index.module.css";
 
 interface Props {
   prefix?: string;
@@ -36,6 +35,9 @@ const Input: React.FC<
     [onValueChange]
   );
 
+  const commonStyles =
+    "outline-none absolute top-0 w-full h-full flex items-center px-24";
+
   return (
     <div
       {...rest}
@@ -45,7 +47,7 @@ const Input: React.FC<
     >
       {value.length ? null : (
         <span
-          className={`text-subheader text-disabled border border-transparent font-semibold ${styles.hint}`}
+          className={`text-subheader text-disabled border border-transparent font-semibold ${commonStyles}`}
         >
           {prefix + hint}
         </span>
@@ -61,7 +63,7 @@ const Input: React.FC<
           error
             ? "border-danger-500 focus:shadow-focus-danger"
             : "border-outline-light focus:shadow-focus-primary"
-        } ${styles.input} ${inputProps?.className || ""}`}
+        } ${commonStyles} ${inputProps?.className || ""}`}
       />
 
       {error ? (
