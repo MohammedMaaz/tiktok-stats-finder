@@ -1,22 +1,34 @@
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import Button from "../common/components/Button";
 import Input from "../common/components/Input";
 import { useSelector, useDispatch } from "react-redux";
 import { tiktokSelectors } from "../modules/tiktok/redux/selectors";
 import { tiktokActions } from "../modules/tiktok/redux/thunks";
 import { AppDispatch } from "../store";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [username, setUsername] = useState("");
   const loading = useSelector(tiktokSelectors.statsLoading);
   const error = useSelector(tiktokSelectors.statsError);
-  const data = useSelector(tiktokSelectors.statsData);
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    dispatch(tiktokActions.fetchStats(username));
+    dispatch(tiktokActions.fetchStats(username))
+      .unwrap()
+      .then(() => router.push(`/stats/${username}`));
   };
+
+  useEffect(() => {
+    //set button's loading false only after navigation (to accomodate page load delay)
+    const handler = () => dispatch(tiktokActions.setStatsLoading(false));
+    router.events.on("routeChangeComplete", handler);
+    return () => {
+      router.events.off("routeChangeComplete", handler);
+    };
+  }, [router.events]);
 
   return (
     <div className="flex flex-col items-center max-w-xl m-auto">

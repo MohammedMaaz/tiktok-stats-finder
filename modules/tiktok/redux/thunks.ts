@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { sliceName, tiktokSlice } from ".";
+import { errors } from "../../../constants/error";
 import { getSerializedError } from "../../../utils";
 import tiktokService from "../services";
 
@@ -9,9 +10,9 @@ const fetchStats = createAsyncThunk(
     dispatch(tiktokActions.fetchStatsRequest());
     try {
       const res = await tiktokService.fetchStats(username);
-      if (!res.data) throw "Data not found";
+      if (!res.data.data) throw errors.NO_DATA;
 
-      dispatch(tiktokActions.fetchStatsScucess(res.data));
+      dispatch(tiktokActions.fetchStatsScucess(res.data.data));
     } catch (error) {
       dispatch(tiktokActions.fetchStatsFailure(getSerializedError(error)));
     }

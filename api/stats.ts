@@ -7,6 +7,7 @@ import {
 import meanBy from "lodash.meanby";
 import { getAPIResponder, readVarFromSite } from "../utils/server";
 import { APIResponse, StatsResponse } from "../common/types/api";
+import { errors } from "../constants/error";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +21,7 @@ export default async function handler(
     //validations
     if (!username)
       return respond(400, {
-        error: "Username is required but is not provided",
+        error: errors.INVALID_USERNAME,
       });
 
     if (Array.isArray(username)) username = username[0];
@@ -32,7 +33,7 @@ export default async function handler(
     );
 
     if (!state?.UserModule?.users?.[username])
-      return respond(404, { error: "User does not exist" });
+      return respond(404, { error: errors.NO_ACCOUNT });
 
     const videos = Object.keys(state?.ItemModule || {})
       .slice(0, VIDEOS_TO_AGGREGATE_COUNT)
@@ -69,6 +70,6 @@ export default async function handler(
     });
   } catch (error) {
     console.error(error);
-    return respond(500, { error: "Internal error" });
+    return respond(500, { error: errors.INTERNAL });
   }
 }

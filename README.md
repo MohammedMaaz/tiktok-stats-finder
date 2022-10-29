@@ -9,6 +9,11 @@ Scraping
 https://github.com/davidteather/TikTok-Api
 https://github.com/slouchd/tiktok-scraper-selenium
 
+Next JS Pass props to server rendered page
+https://github.com/vercel/next.js/discussions/32243
+
+Styling of stats grid
+
 Learning
 
 1. How to run a headless browser in serverless

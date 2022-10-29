@@ -1,3 +1,5 @@
+import { errors } from "../constants/error";
+
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const getSerializedError = (error: any): string => {
@@ -14,5 +16,5 @@ export const getSerializedError = (error: any): string => {
     return str;
   } catch (e) {}
 
-  return "An unknow error occurred";
+  return errors.UNKNOWN;
 };

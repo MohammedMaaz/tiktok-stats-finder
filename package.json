@@ -25,6 +25,7 @@
     "retry-axios": "^3.0.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/lodash.meanby": "^4.10.6",
     "@types/node": "18.11.7",
     "@types/react": "18.0.24",

@@ -22,11 +22,13 @@ export const tiktokSlice = createSlice({
     fetchStatsScucess(state, action: PayloadAction<StatsResponse>) {
       state.statsData = action.payload;
       state.statsError = initialState.statsError;
-      state.statsLoading = initialState.statsLoading;
     },
     fetchStatsFailure(state, action) {
       state.statsError = action.payload;
       state.statsLoading = initialState.statsLoading;
+    },
+    setStatsLoading(state, action) {
+      state.statsLoading = action.payload;
     },
   },
 });

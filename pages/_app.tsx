@@ -7,7 +7,7 @@ import { store } from "../store";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
-      <div className="px-20 pt-88 pb-20">
+      <div className="min-h-screen px-20 pt-88 pb-20">
         <Head>
           <title>TikTok Stats Finder</title>
           <link rel="icon" href="/favicon.png" />
