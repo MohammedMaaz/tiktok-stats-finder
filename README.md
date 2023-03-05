@@ -2,6 +2,8 @@
 
 ### A TikTok stats finder application based on username
 
+https://tiktok-stats-finder.vercel.app/
+
 ## Important Note:
 
 The backend is deployed on a serverless vercel edge function and uses puppeteer for scraping to collect and aggregate data. Since, serverless functions have a cold start and scraper takes time to execute, the function sometimes timeout due to short timeout limit (10 secs) of vercel's free plan.
